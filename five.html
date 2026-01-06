@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NeetCode 150 - The Complete Handbook</title>
+<style>
+    body { font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; margin: 0 auto; padding: 20px; max-width: 900px; color: #333; background-color: #fdfdfd; }
+    h1 { text-align: center; color: #2c3e50; font-size: 2.5em; border-bottom: 4px solid #2ecc71; padding-bottom: 10px; margin-bottom: 30px; }
+    h2 { color: #fff; background-color: #2c3e50; padding: 10px 15px; margin-top: 50px; border-radius: 5px; }
+    h3 { color: #2980b9; margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+    
+    .problem-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); page-break-inside: avoid; }
+    
+    .tags { font-size: 0.85em; color: #7f8c8d; margin-bottom: 10px; font-style: italic; }
+    .tags strong { color: #34495e; font-style: normal; }
+    
+    .box { padding: 12px; border-radius: 4px; margin: 10px 0; font-size: 0.95em; }
+    .pattern-box { background-color: #e8f8f5; border-left: 5px solid #1abc9c; color: #16a085; }
+    .tips-box { background-color: #fef9e7; border-left: 5px solid #f1c40f; color: #7f6000; }
+    
+    .code-block { background-color: #2d3436; color: #dfe6e9; padding: 15px; border-radius: 5px; font-family: "Consolas", "Monaco", monospace; font-size: 0.9em; white-space: pre-wrap; overflow-x: auto; border-left: 5px solid #e74c3c; }
+    
+    /* TOC */
+    .toc { background: #ecf0f1; padding: 20px; border-radius: 8px; column-count: 2; column-gap: 40px; }
+    .toc a { text-decoration: none; color: #34495e; display: block; margin-bottom: 5px; }
+    .toc a:hover { color: #e74c3c; text-decoration: underline; }
+    
+    @media print { body { padding: 0; } .toc { display: none; } h2 { page-break-before: always; } }
+</style>
+</head>
+<body>
+
+<h1>NeetCode 150 Handbook</h1>
+
+<div class="toc">
+    <a href="#c1">1. Arrays & Hashing</a>
+    <a href="#c2">2. Two Pointers</a>
+    <a href="#c3">3. Sliding Window</a>
+    <a href="#c4">4. Stack</a>
+    <a href="#c5">5. Binary Search</a>
+    <a href="#c6">6. Linked List</a>
+    <a href="#c7">7. Trees</a>
+    <a href="#c8">8. Tries</a>
+    <a href="#c9">9. Heap / Priority Queue</a>
+    <a href="#c10">10. Backtracking</a>
+    <a href="#c11">11. Graphs</a>
+    <a href="#c12">12. Advanced Graphs</a>
+    <a href="#c13">13. 1-D DP</a>
+    <a href="#c14">14. 2-D DP</a>
+    <a href="#c15">15. Greedy</a>
+    <a href="#c16">16. Intervals</a>
+    <a href="#c17">17. Math & Geometry</a>
+    <a href="#c18">18. Bit Manipulation</a>
+</div>
+
+<h2 id="c1">1. Arrays & Hashing</h2>
+
+<div class="problem-card">
+    <h3>1. Contains Duplicate</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Apple, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Hash Set (Existence Check)</div>
+    <div class="code-block">unordered_set&lt;int&gt; seen;
+for (int x : nums) {
+    if (seen.count(x)) return true;
+    seen.insert(x);
+}
+return false;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> You can use `std::sort` for O(1) space but O(N log N) time.<br>
+        <strong>Variant:</strong> "Contains Duplicate II" (indices within range k) uses a sliding window set.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>2. Valid Anagram</h3>
+    <div class="tags"><strong>Asked in:</strong> Uber, Google, Spotify</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Frequency Counter (Array)</div>
+    <div class="code-block">if(s.size() != t.size()) return false;
+vector&lt;int&gt; count(26, 0);
+for(int i=0; i&lt;s.size(); i++) { count[s[i]-'a']++; count[t[i]-'a']--; }
+for(int val : count) if(val != 0) return false;
+return true;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Using `vector<int>(26)` is faster than a Hash Map.<br>
+        <strong>Variant:</strong> Group Anagrams; Find All Anagrams in a String (Sliding Window).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>3. Two Sum</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google, Apple</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Hash Map (Complement Search)</div>
+    <div class="code-block">unordered_map&lt;int, int&gt; mp;
+for (int i = 0; i &lt; nums.size(); i++) {
+    if (mp.count(target - nums[i])) return {mp[target - nums[i]], i};
+    mp[nums[i]] = i;
+}
+return {};</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> One-pass hash map is O(N). Sorting + Two Pointers is O(N log N).<br>
+        <strong>Variant:</strong> Two Sum II (Sorted Array), 3Sum, 4Sum.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>4. Group Anagrams</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Affirm, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Sorting as Key</div>
+    <div class="code-block">unordered_map&lt;string, vector&lt;string&gt;&gt; mp;
+for (string s : strs) {
+    string key = s;
+    sort(key.begin(), key.end());
+    mp[key].push_back(s);
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Instead of sorting, you can use a frequency string "1#2#0..." as key for O(NK).<br>
+        <strong>Variant:</strong> Group Shifted Strings.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>5. Top K Frequent Elements</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Bucket Sort or Min-Heap</div>
+    <div class="code-block">unordered_map&lt;int,int&gt; cnt;
+for(int n:nums) cnt[n]++;
+vector&lt;vector&lt;int&gt;&gt; bucket(nums.size()+1);
+for(auto [n,c]:cnt) bucket[c].push_back(n);
+vector&lt;int&gt; res;
+for(int i=bucket.size()-1; i&gt;=0 && res.size()&lt;k; i--) 
+    res.insert(res.end(), bucket[i].begin(), bucket[i].end());</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Bucket sort is O(N), Heap is O(N log K).<br>
+        <strong>Variant:</strong> Kth Largest Element in an Array (QuickSelect).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>6. Encode and Decode Strings</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, LinkedIn</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Length-prefixed Encoding</div>
+    <div class="code-block">// Enc: res += to_string(s.size()) + "#" + s;
+// Dec: Find #, parse length, substring, advance index.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Using a delimiter like `#` prevents collision with string content.<br>
+        <strong>Variant:</strong> Serialize/Deserialize Binary Tree.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>7. Product of Array Except Self</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Asana</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Prefix & Suffix Arrays</div>
+    <div class="code-block">vector&lt;int&gt; res(n, 1);
+for(int i=0, pre=1; i&lt;n; i++) { res[i]=pre; pre*=nums[i]; }
+for(int i=n-1, suf=1; i&gt;=0; i--) { res[i]*=suf; suf*=nums[i]; }</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Do not use division. The result array doesn't count as extra space.<br>
+        <strong>Variant:</strong> Maximum Product Subarray.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>8. Valid Sudoku</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Apple, Uber</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Hashing with Coordinate encoding</div>
+    <div class="code-block">int rows[9][9]={0}, cols[9][9]={0}, boxes[3][3][9]={0};
+// If cell != '.', index = cell-'1'. Check if set, else set = 1.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use arrays `rows[9][9]` instead of hash sets for speed.<br>
+        <strong>Variant:</strong> Sudoku Solver (Backtracking).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>9. Longest Consecutive Sequence</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Hash Set (Start of Sequence Check)</div>
+    <div class="code-block">unordered_set&lt;int&gt; s(nums.begin(), nums.end());
+int maxLen = 0;
+for(int n : s) {
+    if(!s.count(n-1)) {
+        int len = 0;
+        while(s.count(n + len)) len++;
+        maxLen = max(maxLen, len);
+    }
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> The `!s.count(n-1)` check ensures O(N) complexity by only processing sequence starts.<br>
+        <strong>Variant:</strong> Binary Tree Longest Consecutive Sequence.
+    </div>
+</div>
+
+<h2 id="c2">2. Two Pointers</h2>
+
+<div class="problem-card">
+    <h3>10. Valid Palindrome</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Converging Pointers</div>
+    <div class="code-block">int l=0, r=s.size()-1;
+while(l&lt;r){
+    while(l&lt;r && !isalnum(s[l])) l++;
+    while(l&lt;r && !isalnum(s[r])) r--;
+    if(tolower(s[l]) != tolower(s[r])) return false;
+    l++; r--;
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Remember `isalnum()` checks letters and numbers.<br>
+        <strong>Variant:</strong> Valid Palindrome II (can delete 1 char).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>11. Two Sum II - Input Array Is Sorted</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Two Pointers (Ends)</div>
+    <div class="code-block">int l=0, r=n-1;
+while(l&lt;r) {
+    int sum = nums[l] + nums[r];
+    if(sum == target) return {l+1, r+1};
+    else if(sum &lt; target) l++;
+    else r--;
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> 1-based indexing is a common requirement in this specific problem.<br>
+        <strong>Variant:</strong> 3Sum, 4Sum.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>12. 3Sum</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Sort + Loop + Two Pointers</div>
+    <div class="code-block">// Sort. Loop i. Two pointers l=i+1, r=n-1.
+// Skip duplicates: while(nums[l]==nums[l-1]) l++;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Crucial to skip duplicates for i, l, and r to avoid duplicate triplets.<br>
+        <strong>Variant:</strong> 3Sum Closest, 3Sum Smaller.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>13. Container With Most Water</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Greedy Two Pointers</div>
+    <div class="code-block">int l=0, r=height.size()-1, res=0;
+while(l&lt;r) {
+    res = max(res, min(height[l], height[r]) * (r - l));
+    if(height[l] &lt; height[r]) l++; else r--;
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Always move the shorter pointer to potentially find a taller line.<br>
+        <strong>Variant:</strong> Trapping Rain Water.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>14. Trapping Rain Water</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Two Pointers (Max Boundary)</div>
+    <div class="code-block">int l=0, r=n-1, maxL=h[0], maxR=h[n-1], res=0;
+while(l&lt;r) {
+    if(maxL &lt; maxR) { l++; maxL=max(maxL, h[l]); res+=maxL-h[l]; }
+    else { r--; maxR=max(maxR, h[r]); res+=maxR-h[r]; }
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Space O(1) with pointers. O(N) space using PrefixMax and SuffixMax arrays.<br>
+        <strong>Variant:</strong> Trapping Rain Water II (2D Grid using Min-Heap).
+    </div>
+</div>
+
+<h2 id="c3">3. Sliding Window</h2>
+
+<div class="problem-card">
+    <h3>15. Best Time to Buy and Sell Stock</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> One Pass (Min Price Tracking)</div>
+    <div class="code-block">int minP = INT_MAX, maxP = 0;
+for(int p : prices) {
+    minP = min(minP, p);
+    maxP = max(maxP, p - minP);
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Equivalent to finding max subarray sum of differences (Kadane's).<br>
+        <strong>Variant:</strong> Buy/Sell II (Infinite transactions), Buy/Sell with Cooldown.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>16. Longest Substring Without Repeating Characters</h3>
+    <div class="tags"><strong>Asked in:</strong> Microsoft, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Window + Hash Map/Set</div>
+    <div class="code-block">vector&lt;int&gt; m(128, -1);
+int l=0, res=0;
+for(int r=0; r&lt;s.size(); r++) {
+    if(m[s[r]] >= l) l = m[s[r]] + 1;
+    m[s[r]] = r;
+    res = max(res, r - l + 1);
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Using `vector<int>(128)` is faster than a map. Jump `l` directly to `prev_index + 1`.<br>
+        <strong>Variant:</strong> Longest Substring with At Most K Distinct Characters.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>17. Longest Repeating Character Replacement</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Window Validity (Len - MaxFreq &lt;= K)</div>
+    <div class="code-block">int cnt[26]={0}, maxF=0, l=0, res=0;
+for(int r=0; r&lt;s.size(); r++) {
+    maxF = max(maxF, ++cnt[s[r]-'A']);
+    while((r-l+1) - maxF &gt; k) cnt[s[l++]-'A']--;
+    res = max(res, r-l+1);
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> `maxF` doesn't need to be decremented because result only grows if we find a higher `maxF`.<br>
+        <strong>Variant:</strong> Max Consecutive Ones III.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>18. Permutation in String</h3>
+    <div class="tags"><strong>Asked in:</strong> Microsoft, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Fixed Window + Matches Count</div>
+    <div class="code-block">// Sliding window of size s1.size()
+// Compare freq arrays or maintain a "matches" count variable.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Optimizing O(26*N) to O(N) by tracking variable `matches` (0 to 26).<br>
+        <strong>Variant:</strong> Find All Anagrams in a String.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>19. Minimum Window Substring</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google, LinkedIn</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Variable Window + Required Count</div>
+    <div class="code-block">// Expand r until window valid. Shrink l to minimize.
+// Track `have` vs `need` counts.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Handle duplicate characters in `t` correctly. Use `INT_MAX` for initial min length.<br>
+        <strong>Variant:</strong> Smallest Subsequence of Distinct Characters.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>20. Sliding Window Maximum</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Monotonic Decreasing Deque</div>
+    <div class="code-block">deque&lt;int&gt; dq; // Stores indices
+// Pop front if index out of window
+// Pop back if nums[i] >= nums[back]
+// Push i. If i >= k-1, result.push(nums[front])</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Deque stores indices to check window bounds easily.<br>
+        <strong>Variant:</strong> Min Stack, Max Queue.
+    </div>
+</div>
+
+<h2 id="c4">4. Stack</h2>
+
+<div class="problem-card">
+    <h3>21. Valid Parentheses</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Matching Stack</div>
+    <div class="code-block">stack&lt;char&gt; st;
+// If open, push. If closed, check top matches.
+return st.empty();</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Return false immediately if stack empty on closing bracket.<br>
+        <strong>Variant:</strong> Valid Parenthesis String (with *), Remove Invalid Parentheses.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>22. Min Stack</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Lyft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Two Stacks</div>
+    <div class="code-block">stack&lt;int&gt; s, minS;
+// Push: s.push(x); if(minS.empty() || x<=minS.top()) minS.push(x);
+// Pop: if(s.top()==minS.top()) minS.pop(); s.pop();</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Or store `pair<val, min_so_far>` in one stack.<br>
+        <strong>Variant:</strong> Max Stack.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>23. Evaluate Reverse Polish Notation</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Operand Stack</div>
+    <div class="code-block">// Loop tokens. If number, push.
+// If op, pop b, pop a, push (a op b).</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Be careful with subtraction and division order (`a - b` vs `b - a`).<br>
+        <strong>Variant:</strong> Basic Calculator (Infix to Postfix).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>24. Generate Parentheses</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Backtracking (Stack Concept)</div>
+    <div class="code-block">void dfs(int open, int closed) {
+    if(open==n && closed==n) res.push_back(s);
+    if(open &lt; n) dfs(open+1);
+    if(closed &lt; open) dfs(closed+1);
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> `closed < open` ensures validity. `open < n` ensures length.<br>
+        <strong>Variant:</strong> Letter Combinations of a Phone Number.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>25. Daily Temperatures</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Monotonic Decreasing Stack</div>
+    <div class="code-block">stack&lt;int&gt; st; // indices
+for(int i=0; i&lt;n; i++) {
+    while(!st.empty() && t[i] &gt; t[st.top()]) {
+        res[st.top()] = i - st.top(); st.pop();
+    }
+    st.push(i);
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Store indices to calculate the distance (days).<br>
+        <strong>Variant:</strong> Next Greater Element I/II.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>26. Car Fleet</h3>
+    <div class="tags"><strong>Asked in:</strong> Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Sort + Linear Scan (Stack Logic)</div>
+    <div class="code-block">// Sort cars by position (desc).
+// Calculate time = (target-pos)/speed.
+// If time > curMaxTime, new fleet. Else, joins fleet.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use double for time calculations to avoid precision loss.<br>
+        <strong>Variant:</strong> Count Collisions on a Road.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>27. Largest Rectangle in Histogram</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Monotonic Increasing Stack</div>
+    <div class="code-block">// While h[i] < h[top]: pop, calc area = h * (i - st.top() - 1).
+// Push i. Handle remaining elements.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Add `0` to end of heights to flush stack automatically.<br>
+        <strong>Variant:</strong> Maximal Rectangle (2D Matrix).
+    </div>
+</div>
+
+<h2 id="c5">5. Binary Search</h2>
+
+<div class="problem-card">
+    <h3>28. Binary Search</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Divide & Conquer</div>
+    <div class="code-block">int l=0, r=n-1;
+while(l &lt;= r) {
+    int m = l + (r-l)/2;
+    if(nums[m]==t) return m;
+    if(nums[m]&lt;t) l=m+1; else r=m-1;
+}</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use `l + (r-l)/2` to prevent overflow.<br>
+        <strong>Variant:</strong> First Bad Version.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>29. Search a 2D Matrix</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Nvidia</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Virtual Flattening</div>
+    <div class="code-block">// Treat as array [0..m*n-1].
+// Row = mid / cols, Col = mid % cols.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Or do 2 BS: one for row, one for col.<br>
+        <strong>Variant:</strong> Search a 2D Matrix II (Sorted rows and cols, not strictly linear).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>30. Koko Eating Bananas</h3>
+    <div class="tags"><strong>Asked in:</strong> Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> BS on Answer</div>
+    <div class="code-block">// Range [1, max(piles)].
+// If canEatAll(mid), try smaller (r=mid). Else larger (l=mid+1).</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> `time = (p + k - 1) / k` for ceiling division.<br>
+        <strong>Variant:</strong> Minimize Max Distance to Gas Station.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>31. Find Minimum in Rotated Sorted Array</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Compare Mid with Right</div>
+    <div class="code-block">// If nums[mid] > nums[r], min is in right half (l=mid+1).
+// Else min is mid or left (r=mid).</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Loop condition `l < r` to converge on single element.<br>
+        <strong>Variant:</strong> Search in Rotated Sorted Array.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>32. Search in Rotated Sorted Array</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Check Sorted Half</div>
+    <div class="code-block">// Identify sorted half (left or right).
+// Check if target is in that range. Eliminate half.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> If duplicates allowed, worst case O(N).<br>
+        <strong>Variant:</strong> Search in Rotated Sorted Array II (Duplicates).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>33. Time Based Key-Value Store</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Netflix</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Map + Binary Search</div>
+    <div class="code-block">upper_bound(v.begin(), v.end(), pair{timestamp, ""});
+// Return prev(it) if it != begin.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use `vector` inside map and `std::upper_bound` for clean code.<br>
+        <strong>Variant:</strong> Snapshot Array.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>34. Median of Two Sorted Arrays</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Apple</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Partitioning</div>
+    <div class="code-block">// BS on the shorter array.
+// Partition X and Y such that maxLeftX <= minRightY ...</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Tricky edge cases (empty partitions). Use infinity for boundaries.<br>
+        <strong>Variant:</strong> Kth Element of Two Sorted Arrays.
+    </div>
+</div>
+
+<h2 id="c6">6. Linked List</h2>
+
+<div class="problem-card">
+    <h3>35. Reverse Linked List</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Iterative Pointer Reversal</div>
+    <div class="code-block">while(curr) { next=curr->next; curr->next=prev; prev=curr; curr=next; }</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Iterative O(1) space is better than Recursive O(N) stack.<br>
+        <strong>Variant:</strong> Reverse Linked List II (Range).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>36. Merge Two Sorted Lists</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Dummy Head</div>
+    <div class="code-block">ListNode dummy; ListNode* tail=&dummy;
+// compare l1, l2, append smaller, advance.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Dummy node avoids null checks for head.<br>
+        <strong>Variant:</strong> Merge K Sorted Lists.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>37. Reorder List</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Middle + Reverse + Merge</div>
+    <div class="code-block">// 1. Slow/Fast to find mid. 2. Reverse second half. 3. Interleave.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Be careful breaking the link between first and second half.<br>
+        <strong>Variant:</strong> Palindrome Linked List.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>38. Remove Nth Node From End of List</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Two Pointers Gap</div>
+    <div class="code-block">// Advance fast by n+1. Move slow/fast until fast is null.
+// slow->next = slow->next->next.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use dummy node to handle removing the head easily.<br>
+        <strong>Variant:</strong> Delete Node in a Linked List (given access only to node).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>39. Copy List with Random Pointer</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Map or Interweaving</div>
+    <div class="code-block">// Map: map[old] = new Node(old->val); map[old]->next = map[old->next];</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> O(1) space: `A->A'->B->B'` interweaving structure.<br>
+        <strong>Variant:</strong> Clone Graph.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>40. Add Two Numbers</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Math Simulation</div>
+    <div class="code-block">// sum = val1 + val2 + carry; node->val = sum%10; carry = sum/10;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Don't forget the final `carry` if it's > 0.<br>
+        <strong>Variant:</strong> Add Two Numbers II (MSB first, use stack or reverse).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>41. Linked List Cycle</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Spotify</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Fast & Slow Pointers</div>
+    <div class="code-block">while(fast && fast->next) { slow=slow->next; fast=fast->next->next; if(slow==fast) return true; }</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Floyd's Tortoise and Hare algorithm.<br>
+        <strong>Variant:</strong> Linked List Cycle II (Find entry point).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>42. Find the Duplicate Number</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Linked List Cycle on Array</div>
+    <div class="code-block">// Detect cycle using values as pointers.
+// Reset slow to head, move both 1 step to find entry.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> You cannot modify array (so no negative marking).<br>
+        <strong>Variant:</strong> First Missing Positive.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>43. LRU Cache</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Hash Map + Doubly LL</div>
+    <div class="code-block">// Map stores iterator to List node.
+// Splice moves node to front O(1).</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> `std::list` in C++ provides `splice` for O(1) moves.<br>
+        <strong>Variant:</strong> LFU Cache.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>44. Merge K Sorted Lists</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Min-Heap</div>
+    <div class="code-block">priority_queue&lt;Node*, ...&gt; pq;
+// Push heads. Pop min, add next of min.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Complexity O(N log K). Divide & Conquer merge is also O(N log K).<br>
+        <strong>Variant:</strong> Merge Sorted Array.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>45. Reverse Nodes in k-Group</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Iterative Group Reversal</div>
+    <div class="code-block">// Check if k nodes exist. If yes, reverse them. Link prev to new head.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use a dummy node. Hardest part is linking the groups correctly.<br>
+        <strong>Variant:</strong> Swap Nodes in Pairs.
+    </div>
+</div>
+
+<h2 id="c7">7. Trees</h2>
+
+<div class="problem-card">
+    <h3>46. Invert Binary Tree</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Homebrew</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Recursive Swap</div>
+    <div class="code-block">swap(root->left, root->right); invert(left); invert(right);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Famous interview question. Easy with recursion.<br>
+        <strong>Variant:</strong> Mirror N-ary Tree.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>47. Maximum Depth of Binary Tree</h3>
+    <div class="tags"><strong>Asked in:</strong> LinkedIn, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DFS</div>
+    <div class="code-block">return 1 + max(depth(l), depth(r));</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Can also use BFS for level count.<br>
+        <strong>Variant:</strong> Minimum Depth of Binary Tree.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>48. Diameter of Binary Tree</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Post-order DFS</div>
+    <div class="code-block">// maxDia = max(maxDia, l + r); return 1 + max(l, r);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Diameter doesn't have to pass through root.<br>
+        <strong>Variant:</strong> Binary Tree Maximum Path Sum.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>49. Balanced Binary Tree</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DFS with Height Diff Check</div>
+    <div class="code-block">// If abs(l - r) > 1 return -1;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Return -1 (error code) to bubble up imbalance immediately.<br>
+        <strong>Variant:</strong> Check Completeness of a Binary Tree.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>50. Same Tree</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Recursive Comparison</div>
+    <div class="code-block">if(!p || !q) return p==q;
+return p->val==q->val && same(p->l, q->l) && same(p->r, q->r);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Base case handles both null (true) and one null (false).<br>
+        <strong>Variant:</strong> Symmetric Tree.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>51. Subtree of Another Tree</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DFS + SameTree</div>
+    <div class="code-block">if(same(s, t)) return true;
+return sub(s->l, t) || sub(s->r, t);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> O(N*M). Can be O(N+M) with Merkle Hashing or Serialization.<br>
+        <strong>Variant:</strong> Count Univalue Subtrees.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>52. Lowest Common Ancestor of a BST</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> BST Search</div>
+    <div class="code-block">if(root->val > max(p, q)) go left;
+if(root->val &lt; min(p, q)) go right;
+return root;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> For BST, no need to visit both sides. O(H).<br>
+        <strong>Variant:</strong> LCA of Binary Tree (requires visiting both).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>53. Binary Tree Level Order Traversal</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> BFS (Queue)</div>
+    <div class="code-block">queue&lt;Node*&gt; q; // push root
+// Loop q size. Process level. Push children.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Remember to capture `size = q.size()` before the inner loop.<br>
+        <strong>Variant:</strong> Zigzag Level Order Traversal.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>54. Binary Tree Right Side View</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> BFS (Last Element)</div>
+    <div class="code-block">// BFS. If i == size-1, add to result.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> DFS (Root-Right-Left) also works by taking first node at each depth.<br>
+        <strong>Variant:</strong> Boundary of Binary Tree.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>55. Count Good Nodes in Binary Tree</h3>
+    <div class="tags"><strong>Asked in:</strong> Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DFS Path Max</div>
+    <div class="code-block">dfs(node, maxSoFar):
+  res += (node->val >= maxSoFar);
+  dfs(child, max(val, maxSoFar));</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Pass `maxSoFar` by value in recursion.<br>
+        <strong>Variant:</strong> Path Sum III.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>56. Validate Binary Search Tree</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DFS Range Check</div>
+    <div class="code-block">valid(node, min, max):
+  if(val <= min || val >= max) return false;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use `long long` for min/max to handle INT_MAX edge cases.<br>
+        <strong>Variant:</strong> Recover Binary Search Tree.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>57. Kth Smallest Element in a BST</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Uber</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> In-order Traversal</div>
+    <div class="code-block">// In-order yields sorted. Return k-th element visited.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Iterative stack solution allows early exit.<br>
+        <strong>Variant:</strong> Convert BST to Greater Tree.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>58. Construct Binary Tree from Preorder and Inorder</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Recursion + Hash Map</div>
+    <div class="code-block">// Map inorder indices. Root is pre[0]. Split inorder at root index.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Preorder gives Root. Inorder gives Left/Right sizes.<br>
+        <strong>Variant:</strong> Construct from Inorder and Postorder.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>59. Binary Tree Maximum Path Sum</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DFS Global Max</div>
+    <div class="code-block">gain = max(0, dfs(child));
+max_path = max(max_path, val + l + r);
+return val + max(l, r);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Ignore negative gains (max(0, ...)).<br>
+        <strong>Variant:</strong> Path Sum.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>60. Serialize and Deserialize Binary Tree</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Preorder with Null markers</div>
+    <div class="code-block">// Ser: "1,2,N,N,3,N,N"
+// Des: Split string, use queue to rebuild recursively.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Level order (BFS) serialization is also common.<br>
+        <strong>Variant:</strong> Serialize N-ary Tree.
+    </div>
+</div>
+
+<h2 id="c8">8. Tries</h2>
+
+<div class="problem-card">
+    <h3>61. Implement Trie (Prefix Tree)</h3>
+    <div class="tags"><strong>Asked in:</strong> Twitter, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> N-ary Tree (Array)</div>
+    <div class="code-block">Node* children[26]; bool isEnd;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> `curr = curr->children[c - 'a']`.<br>
+        <strong>Variant:</strong> Design Search Autocomplete System.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>62. Design Add and Search Words Data Structure</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Trie + DFS (Wildcard)</div>
+    <div class="code-block">if(c == '.') check all children recursively.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Only recursion is needed for the '.' case.<br>
+        <strong>Variant:</strong> Regex Matching (harder DP version).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>63. Word Search II</h3>
+    <div class="tags"><strong>Asked in:</strong> Microsoft, Uber</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Backtracking + Trie</div>
+    <div class="code-block">// Build Trie of words. DFS on grid checking Trie.
+// Remove leaf nodes to prune.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Modifying the Trie (pruning matched words) is key to passing time limits.<br>
+        <strong>Variant:</strong> Unique Paths III.
+    </div>
+</div>
+
+<h2 id="c9">9. Heap / Priority Queue</h2>
+
+<div class="problem-card">
+    <h3>64. Kth Largest Element in a Stream</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Min-Heap Size K</div>
+    <div class="code-block">// Min-heap. If size > k, pop. Top is Kth largest.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Only keep K elements. The smallest of the top K is the Kth largest.<br>
+        <strong>Variant:</strong> Top K Frequent Words.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>65. Last Stone Weight</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Max-Heap</div>
+    <div class="code-block">priority_queue&lt;int&gt; pq; // max heap by default</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Simulation is straightforward with PQ.<br>
+        <strong>Variant:</strong> Put Marbles in Bags (Hard).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>66. K Closest Points to Origin</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Max-Heap Size K</div>
+    <div class="code-block">// Maintain Max-Heap of size K.
+// If new dist &lt; top, pop and push.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use Max-Heap to discard largest distances, keeping smallest K.<br>
+        <strong>Variant:</strong> K Closest Elements.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>67. Kth Largest Element in an Array</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> QuickSelect or Min-Heap</div>
+    <div class="code-block">// QuickSelect: Partition like QuickSort. O(N) avg.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> `std::nth_element` in C++ does this in O(N).<br>
+        <strong>Variant:</strong> Wiggle Sort II.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>68. Task Scheduler</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Math or Simulation</div>
+    <div class="code-block">time = (max_freq - 1) * (n + 1) + count_max;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> The bottleneck is the most frequent task.<br>
+        <strong>Variant:</strong> Reorganize String.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>69. Design Twitter</h3>
+    <div class="tags"><strong>Asked in:</strong> Twitter</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Merge K Sorted Lists</div>
+    <div class="code-block">// Pull latest tweets from followees. Use Min-Heap to sort.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Merge-on-read (Pull) vs Fan-out-on-write (Push).<br>
+        <strong>Variant:</strong> Design News Feed.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>70. Find Median from Data Stream</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Two Heaps</div>
+    <div class="code-block">// MaxHeap (left), MinHeap (right).
+// Balance sizes. Median is top or avg.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Lazy removal is needed if deletion is supported.<br>
+        <strong>Variant:</strong> Sliding Window Median.
+    </div>
+</div>
+
+<h2 id="c10">10. Backtracking</h2>
+
+<div class="problem-card">
+    <h3>71. Subsets</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Pick / No-Pick</div>
+    <div class="code-block">dfs(i+1); // exclude
+cur.push(n[i]); dfs(i+1); cur.pop(); // include</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> 2^N complexity. Iterative bitmask solution exists.<br>
+        <strong>Variant:</strong> Subsets II (Duplicates).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>72. Combination Sum</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Airbnb</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DFS with Reuse</div>
+    <div class="code-block">// Pass index `i` (not `i+1`) to reuse element.
+// Base cases: target==0 (add), target&lt;0 (ret).</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Sort candidates to break early.<br>
+        <strong>Variant:</strong> Combination Sum II (No reuse), III.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>73. Permutations</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Swapping</div>
+    <div class="code-block">// Swap nums[i] with nums[start]. Recurse. Swap back.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> N! complexity. Swapping saves space vs `visited` array.<br>
+        <strong>Variant:</strong> Permutations II (Duplicates).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>74. Subsets II</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Sort + Skip</div>
+    <div class="code-block">sort(nums);
+// if(i > start && nums[i] == nums[i-1]) continue;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Sorting is mandatory to group duplicates.<br>
+        <strong>Variant:</strong> Permutations II.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>75. Combination Sum II</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Sort + Skip + No Reuse</div>
+    <div class="code-block">// Pass `i+1`. Skip duplicates loop.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> "Each number used once" -> i+1.<br>
+        <strong>Variant:</strong> Combination Sum.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>76. Word Search</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Bloomberg</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Grid DFS</div>
+    <div class="code-block">// Mark board[r][c] = '#'. Recurse. Restore.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Fail fast if char doesn't match.<br>
+        <strong>Variant:</strong> Word Search II (Multiple words).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>77. Palindrome Partitioning</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Partitioning DFS</div>
+    <div class="code-block">// Loop i from start to end. If s[start..i] is Pali, recurse(i+1).</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> DP can precompute palindrome checks.<br>
+        <strong>Variant:</strong> Palindrome Partitioning II (Min cuts).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>78. Letter Combinations of a Phone Number</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Cartesian Product DFS</div>
+    <div class="code-block">// Map digit to string. Loop chars, recurse.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Iterative BFS solution also works.<br>
+        <strong>Variant:</strong> Decode Ways.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>79. N-Queens</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Constraint Sets</div>
+    <div class="code-block">// Sets: cols, diag1(r+c), diag2(r-c).</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> `r+c` and `r-c` uniquely identify diagonals.<br>
+        <strong>Variant:</strong> N-Queens II (Count only).
+    </div>
+</div>
+
+<h2 id="c11">11. Graphs</h2>
+
+<div class="problem-card">
+    <h3>80. Number of Islands</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Grid Flood Fill</div>
+    <div class="code-block">dfs: grid[r][c]='0'; dfs neighbors.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Mutating the grid saves a `visited` array.<br>
+        <strong>Variant:</strong> Number of Islands II (Union Find).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>81. Clone Graph</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Map&lt;Old, New&gt;</div>
+    <div class="code-block">// DFS. If node in map, return map[node].
+// Else create, add to map, clone neighbors.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Handles cycles naturally via the map check.<br>
+        <strong>Variant:</strong> Copy List with Random Pointer.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>82. Max Area of Island</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Flood Fill Count</div>
+    <div class="code-block">return 1 + dfs(up)+dfs(down)...</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Return 0 if out of bounds or water.<br>
+        <strong>Variant:</strong> Largest Component Size by Common Factor.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>83. Pacific Atlantic Water Flow</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Multi-Source DFS from Borders</div>
+    <div class="code-block">// DFS from Pacific cells -> set P.
+// DFS from Atlantic cells -> set A.
+// Result = P intersection A.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Search "up" from ocean (increasing height).<br>
+        <strong>Variant:</strong> Longest Increasing Path in a Matrix.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>84. Surrounded Regions</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Boundary DFS</div>
+    <div class="code-block">// DFS from border 'O's, mark 'T'.
+// Convert remaining 'O'->'X', 'T'->'O'.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> "Inverse thinking" - find what CANNOT be captured.<br>
+        <strong>Variant:</strong> Number of Enclaves.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>85. Rotting Oranges</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Multi-Source BFS</div>
+    <div class="code-block">// Queue all rotten. BFS level by level.
+// Decrement fresh count.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Check if fresh count == 0 at end.<br>
+        <strong>Variant:</strong> Walls and Gates.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>86. Walls and Gates</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Multi-Source BFS</div>
+    <div class="code-block">// Queue all gates. BFS to update distances.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Start from gates (distance 0) and expand.<br>
+        <strong>Variant:</strong> 01 Matrix.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>87. Course Schedule</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Topological Sort (Cycle Detection)</div>
+    <div class="code-block">// State: 0=unvisited, 1=visiting, 2=visited.
+// If node is 1, cycle.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Kahn's Algo (Indegree) is easier to implement iteratively.<br>
+        <strong>Variant:</strong> Course Schedule II (Return order).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>88. Course Schedule II</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Kahn's Algorithm</div>
+    <div class="code-block">// Queue nodes with indegree 0.
+// Pop, append to result, decrement neighbors.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> If result size != numCourses, cycle exists.<br>
+        <strong>Variant:</strong> Alien Dictionary.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>89. Redundant Connection</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Union-Find</div>
+    <div class="code-block">// If union(u, v) returns false (already connected), edge is redundant.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Path compression and rank optimization make this nearly O(1).<br>
+        <strong>Variant:</strong> Redundant Connection II (Directed).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>90. Number of Connected Components</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, LinkedIn</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Union-Find or BFS</div>
+    <div class="code-block">// Initial count = n. Decrement on successful union.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Simple traversal works too since it's undirected.<br>
+        <strong>Variant:</strong> Friend Circles.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>91. Graph Valid Tree</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Cycle Check + Connected Check</div>
+    <div class="code-block">// 1. No cycles (Union Find). 2. Components == 1.
+// OR: Edges == n-1 and Connected.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> A tree must have exactly N-1 edges.<br>
+        <strong>Variant:</strong> Minimimum Spanning Tree.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>92. Word Ladder</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> BFS (Shortest Path)</div>
+    <div class="code-block">// Change each char 'a'-'z'. If in dict, add to q.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Preprocessing patterns `*og`, `d*g` helps for adjacency.<br>
+        <strong>Variant:</strong> Word Ladder II (Output paths).
+    </div>
+</div>
+
+<h2 id="c12">12. Advanced Graphs</h2>
+
+<div class="problem-card">
+    <h3>93. Reconstruct Itinerary</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Hierholzer's Algo (Eulerian Path)</div>
+    <div class="code-block">// DFS post-order. Use multiset for edges.
+// Reverse result.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use `multiset` or sorted vector to satisfy lexical order requirement.<br>
+        <strong>Variant:</strong> Eulerian Circuit.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>94. Min Cost to Connect All Points</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Prim's Algorithm</div>
+    <div class="code-block">// Min-Heap {cost, node}.
+// Add cheapest edge to unvisited node.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Dense graph, so Prim's is better than Kruskal's.<br>
+        <strong>Variant:</strong> Kruskal's Algorithm (Sparse graphs).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>95. Network Delay Time</h3>
+    <div class="tags"><strong>Asked in:</strong> Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Dijkstra's Algorithm</div>
+    <div class="code-block">// Priority Queue {dist, node}.
+// Relax edges. Max of dist array is result.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Standard Dijkstra template.<br>
+        <strong>Variant:</strong> Path with Maximum Probability.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>96. Swim in Rising Water</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Modified Dijkstra</div>
+    <div class="code-block">// Min-Heap {time, r, c}.
+// Cost = max(time, height[r][c]).</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Like finding a path with minimum maximum edge weight.<br>
+        <strong>Variant:</strong> Path With Minimum Effort.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>97. Alien Dictionary</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Topo Sort</div>
+    <div class="code-block">// Compare adj words. First diff char: u -> v.
+// Kahn's Algo.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Handle edge case: "abc" before "ab" (invalid).<br>
+        <strong>Variant:</strong> Sequence Reconstruction.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>98. Cheapest Flights Within K Stops</h3>
+    <div class="tags"><strong>Asked in:</strong> Airbnb, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Bellman-Ford</div>
+    <div class="code-block">// Run k+1 relaxations on edge list.
+// Use temp array to prevent cascading updates in one iter.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Dijkstra works but need to track steps in state.<br>
+        <strong>Variant:</strong> Shortest Path in DAG.
+    </div>
+</div>
+
+<h2 id="c13">13. 1-D Dynamic Programming</h2>
+
+<div class="problem-card">
+    <h3>99. Climbing Stairs</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Fibonacci</div>
+    <div class="code-block">curr = prev1 + prev2;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Identical to Fibonacci sequence.<br>
+        <strong>Variant:</strong> Min Cost Climbing Stairs.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>100. Min Cost Climbing Stairs</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DP Array</div>
+    <div class="code-block">cost[i] += min(cost[i-1], cost[i-2]);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Modify input array to save space.<br>
+        <strong>Variant:</strong> Minimum Path Sum.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>101. House Robber</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Recurrence: max(skip, rob)</div>
+    <div class="code-block">newRob = max(rob1 + n, rob2);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Space optimization to O(1) using two variables.<br>
+        <strong>Variant:</strong> House Robber II (Circular).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>102. House Robber II</h3>
+    <div class="tags"><strong>Asked in:</strong> Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Circular DP</div>
+    <div class="code-block">max(rob(0, n-2), rob(1, n-1))</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Break circle into two linear problems.<br>
+        <strong>Variant:</strong> Paint House.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>103. Longest Palindromic Substring</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Expand Center</div>
+    <div class="code-block">// Expand for odd (i, i) and even (i, i+1).</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> O(N^2). Manacher's Algo is O(N) but overkill.<br>
+        <strong>Variant:</strong> Palindromic Substrings.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>104. Palindromic Substrings</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Expand Center Count</div>
+    <div class="code-block">res++; l--; r++;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Count while expanding valid palindromes.<br>
+        <strong>Variant:</strong> Longest Palindromic Subsequence.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>105. Decode Ways</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Fibonacci-ish</div>
+    <div class="code-block">if(s[i]!='0') dp[i]+=dp[i-1];
+if(valid two digit) dp[i]+=dp[i-2];</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Watch out for leading zeros.<br>
+        <strong>Variant:</strong> Decode Ways II (* wildcard).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>106. Coin Change</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Unbounded Knapsack (Min)</div>
+    <div class="code-block">dp[a] = min(dp[a], 1 + dp[a - coin]);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Initialize DP with `amount + 1`.<br>
+        <strong>Variant:</strong> Coin Change II (Ways).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>107. Maximum Product Subarray</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, LinkedIn</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Track Min/Max</div>
+    <div class="code-block">tmp = curMax*n;
+curMax = max({n, n*curMax, n*curMin});
+curMin = min({n, tmp, n*curMin});</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Negative * Negative = Positive, so track min.<br>
+        <strong>Variant:</strong> Maximum Subarray Sum.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>108. Word Break</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DP String Split</div>
+    <div class="code-block">if(dp[j] && dict.count(s.substr(j, i-j))) dp[i]=true;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> N^2 check or Trie optimization.<br>
+        <strong>Variant:</strong> Word Break II (Return sentences).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>109. Longest Increasing Subsequence</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DP or Patience Sort</div>
+    <div class="code-block">// DP: O(N^2). Binary Search: O(N log N).</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> `std::lower_bound` replaces element to maintain increasing subseq.<br>
+        <strong>Variant:</strong> Russian Doll Envelopes.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>110. Partition Equal Subset Sum</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> 0/1 Knapsack (Set)</div>
+    <div class="code-block">set&lt;int&gt; dp; dp.insert(0);
+for(t : dp) newDP.insert(t+n);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Target is sum/2. If sum is odd, return false.<br>
+        <strong>Variant:</strong> Partition to K Equal Sum Subsets.
+    </div>
+</div>
+
+<h2 id="c14">14. 2-D Dynamic Programming</h2>
+
+<div class="problem-card">
+    <h3>111. Unique Paths</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Grid DP</div>
+    <div class="code-block">dp[i][j] = dp[i+1][j] + dp[i][j+1];</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Combinatorics solution: (m+n-2) C (m-1).<br>
+        <strong>Variant:</strong> Unique Paths II (Obstacles).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>112. Longest Common Subsequence</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> 2D Grid Match</div>
+    <div class="code-block">if(c1==c2) dp[i][j] = 1+dp[i+1][j+1];
+else dp[i][j] = max(dp[i+1][j], dp[i][j+1]);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Basis for diff tools (git).<br>
+        <strong>Variant:</strong> Longest Common Substring.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>113. Best Time to Buy and Sell Stock with Cooldown</h3>
+    <div class="tags"><strong>Asked in:</strong> Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> State Machine</div>
+    <div class="code-block">sold = hold + price;
+hold = max(hold, reset - price);
+reset = max(reset, prev_sold);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Draw the state diagram: Reset -> Buy -> Hold -> Sell -> Cooldown.<br>
+        <strong>Variant:</strong> Buy/Sell with Transaction Fee.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>114. Coin Change II</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Unbounded Knapsack (Ways)</div>
+    <div class="code-block">dp[a] += dp[a - coin];</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Outer loop coins, inner loop amount to avoid permutations.<br>
+        <strong>Variant:</strong> Combination Sum IV (Permutations allowed).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>115. Target Sum</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Subset Sum</div>
+    <div class="code-block">// P = (target + total) / 2. Find subset sum P.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Reduce to "Partition Equal Subset Sum".<br>
+        <strong>Variant:</strong> Expression Add Operators.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>116. Interleaving String</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> 2D DP Reachability</div>
+    <div class="code-block">dp[j] = (dp[j] && s1==s3) || (dp[j-1] && s2==s3);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Can optimize to 1D array.<br>
+        <strong>Variant:</strong> Is Subsequence.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>117. Longest Increasing Path in a Matrix</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DFS + Memo</div>
+    <div class="code-block">memo[r][c] = 1 + max(dfs(neighbors));</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Path is strictly increasing, so no cycles possible.<br>
+        <strong>Variant:</strong> Number of Increasing Paths.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>118. Distinct Subsequences</h3>
+    <div class="tags"><strong>Asked in:</strong> Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> String Match DP</div>
+    <div class="code-block">if(s[i]==t[j]) dp[j] += dp[j+1];</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use `unsigned long long` for overflow in C++.<br>
+        <strong>Variant:</strong> Delete Operation for Two Strings.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>119. Edit Distance</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Levenshtein Distance</div>
+    <div class="code-block">1 + min(insert, delete, replace);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Replace is `dp[i+1][j+1]`.<br>
+        <strong>Variant:</strong> One Edit Distance.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>120. Burst Balloons</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Interval DP</div>
+    <div class="code-block">// Last balloon to burst k.
+dp[i][j] = max(nums[i-1]*nums[k]*nums[j+1] + dp[i][k-1] + dp[k+1][j]);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Iterate length, then i, then split k.<br>
+        <strong>Variant:</strong> Minimum Cost to Merge Stones.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>121. Regular Expression Matching</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DP with * logic</div>
+    <div class="code-block">if '*' check dp[i][j+2] (skip) or match && dp[i+1][j] (use)</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Process patterns from back to front or use recursion.<br>
+        <strong>Variant:</strong> Wildcard Matching (greedy possible).
+    </div>
+</div>
+
+<h2 id="c15">15. Greedy</h2>
+
+<div class="problem-card">
+    <h3>122. Maximum Subarray</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Kadane's Algorithm</div>
+    <div class="code-block">curSum = max(n, curSum + n);
+maxSum = max(maxSum, curSum);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Reset sum if negative. It never helps to keep negative prefix.<br>
+        <strong>Variant:</strong> Maximum Sum Circular Subarray.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>123. Jump Game</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Goal Shift</div>
+    <div class="code-block">if(i + nums[i] >= goal) goal = i;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Work backwards from the end.<br>
+        <strong>Variant:</strong> Jump Game II (Min jumps).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>124. Jump Game II</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Implicit BFS</div>
+    <div class="code-block">end = maxReach; jumps++;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Range `[l, r]` is the set of nodes reachable at `jumps` count.<br>
+        <strong>Variant:</strong> Jump Game III (BFS).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>125. Gas Station</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Prefix Sum Check</div>
+    <div class="code-block">if(sum &lt; 0) { total=0; start=i+1; }</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Unique solution exists if totalGas >= totalCost.<br>
+        <strong>Variant:</strong> Minimize deviation.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>126. Hand of Straights</h3>
+    <div class="tags"><strong>Asked in:</strong> Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Map / Min-Heap</div>
+    <div class="code-block">// Process min card. Check if min+1...min+k exist.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use an ordered map (TreeMap) to efficiently find min.<br>
+        <strong>Variant:</strong> Divide Array in Sets of K Consecutive Numbers.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>127. Merge Triplets to Form Target Triplet</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Filter Greedy</div>
+    <div class="code-block">if(t[0] > target[0] ...) continue;
+res[0] = max(res[0], t[0]);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Ignore any triplet that exceeds target dimensions.<br>
+        <strong>Variant:</strong> Two City Scheduling.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>128. Partition Labels</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Last Index Map</div>
+    <div class="code-block">end = max(end, last[c]);
+if(i == end) push(size);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Greedy extension of current partition end.<br>
+        <strong>Variant:</strong> Merge Intervals.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>129. Valid Parenthesis String</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Min/Max Open Count</div>
+    <div class="code-block">low = max(0, low-1); high++;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> `low` is min open possible, `high` is max open possible.<br>
+        <strong>Variant:</strong> Check Valid String (Stack).
+    </div>
+</div>
+
+<h2 id="c16">16. Intervals</h2>
+
+<div class="problem-card">
+    <h3>130. Insert Interval</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Linear Scan</div>
+    <div class="code-block">// Add before. Merge overlapping. Add after.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Handle edge cases where new interval is first or last.<br>
+        <strong>Variant:</strong> Range Module.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>131. Merge Intervals</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Sort by Start</div>
+    <div class="code-block">if(start &lt;= lastEnd) lastEnd = max(lastEnd, end);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Sorting takes O(N log N), merging O(N).<br>
+        <strong>Variant:</strong> Employee Free Time.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>132. Non-overlapping Intervals</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Sort by End</div>
+    <div class="code-block">if(start &lt; prevEnd) count++; else prevEnd=end;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Keep the interval that ends earliest to leave room for others.<br>
+        <strong>Variant:</strong> Minimum Number of Arrows to Burst Balloons.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>133. Meeting Rooms</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Overlap Check</div>
+    <div class="code-block">if(currStart &lt; prevEnd) return false;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Simple O(N log N) sort check.<br>
+        <strong>Variant:</strong> Meeting Rooms II.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>134. Meeting Rooms II</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Chronological Ordering</div>
+    <div class="code-block">sort(starts); sort(ends);
+if(starts[i] &lt; ends[j]) count++;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Count active meetings. Max count is answer.<br>
+        <strong>Variant:</strong> Car Pooling.
+    </div>
+</div>
+
+<h2 id="c17">17. Math & Geometry</h2>
+
+<div class="problem-card">
+    <h3>135. Rotate Image</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Transpose + Reflect</div>
+    <div class="code-block">// Transpose (swap(i,j) with (j,i)). Reverse rows.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Clockwise = Transpose -> Reverse Rows. Counter = Transpose -> Reverse Cols.<br>
+        <strong>Variant:</strong> Rotate Array.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>136. Spiral Matrix</h3>
+    <div class="tags"><strong>Asked in:</strong> Microsoft, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Boundary Simulation</div>
+    <div class="code-block">// Boundaries L, R, T, B. Loop while L&lt;=R && T&lt;=B.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Handle the single row/column edge case inside the loop.<br>
+        <strong>Variant:</strong> Spiral Matrix II (Generation).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>137. Set Matrix Zeroes</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> In-place Flagging</div>
+    <div class="code-block">// Use row 0 and col 0 to store flags.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Use a separate variable `col0` for the first column's state.<br>
+        <strong>Variant:</strong> Game of Life.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>138. Happy Number</h3>
+    <div class="tags"><strong>Asked in:</strong> Google, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Cycle Detection</div>
+    <div class="code-block">// Slow/Fast pointers on sum of squares.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> The cycle always includes 4 -> 16 -> 37 ... -> 4.<br>
+        <strong>Variant:</strong> Linked List Cycle.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>139. Pow(x, n)</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Binary Exponentiation</div>
+    <div class="code-block">if(n%2) res *= x; x *= x; n /= 2;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Handle `n = INT_MIN` by using `long long` for `n`.<br>
+        <strong>Variant:</strong> Super Pow.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>140. Multiply Strings</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Schoolbook Math</div>
+    <div class="code-block">res[i+j+1] += prod;
+res[i+j] += res[i+j+1] / 10;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Result length is at most N+M.<br>
+        <strong>Variant:</strong> Add Strings.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>141. Detect Squares</h3>
+    <div class="tags"><strong>Asked in:</strong> Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Point Map</div>
+    <div class="code-block">// Iterate diagonal points. Check axis-aligned corners.</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Store counts of points to handle duplicates.<br>
+        <strong>Variant:</strong> Max Points on a Line.
+    </div>
+</div>
+
+<h2 id="c18">18. Bit Manipulation</h2>
+
+<div class="problem-card">
+    <h3>142. Single Number</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> XOR</div>
+    <div class="code-block">res ^= n;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> A ^ A = 0. A ^ 0 = A.<br>
+        <strong>Variant:</strong> Single Number II (appear 3 times), III (two single numbers).
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>143. Number of 1 Bits</h3>
+    <div class="tags"><strong>Asked in:</strong> Microsoft, Apple</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> n & (n-1)</div>
+    <div class="code-block">while(n) { n &= (n-1); count++; }</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> `n &= (n-1)` removes the lowest set bit.<br>
+        <strong>Variant:</strong> Hamming Distance.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>144. Counting Bits</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> DP + Bit Logic</div>
+    <div class="code-block">dp[i] = dp[i >> 1] + (i & 1);</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Offset approach also works: `dp[i] = 1 + dp[i - offset]`.<br>
+        <strong>Variant:</strong> Gray Code.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>145. Reverse Bits</h3>
+    <div class="tags"><strong>Asked in:</strong> Apple, Amazon</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Bit Shifting</div>
+    <div class="code-block">res = (res &lt;&lt; 1) | (n & 1); n &gt;&gt;= 1;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Loop exactly 32 times for uint32.<br>
+        <strong>Variant:</strong> Reverse Integer.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>146. Missing Number</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Microsoft</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> XOR Difference</div>
+    <div class="code-block">res ^= i ^ nums[i];</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Also solvable by Sum(0..n) - Sum(nums).<br>
+        <strong>Variant:</strong> Find the Duplicate Number.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>147. Sum of Two Integers</h3>
+    <div class="tags"><strong>Asked in:</strong> Facebook</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Full Adder Logic</div>
+    <div class="code-block">carry = (a & b) &lt;&lt; 1; a = a ^ b;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> XOR is sum without carry. AND is carry.<br>
+        <strong>Variant:</strong> Add Binary.
+    </div>
+</div>
+
+<div class="problem-card">
+    <h3>148. Reverse Integer</h3>
+    <div class="tags"><strong>Asked in:</strong> Amazon, Google</div>
+    <div class="box pattern-box"><strong>Pattern:</strong> Modulo Math</div>
+    <div class="code-block">res = res*10 + x%10;</div>
+    <div class="box tips-box">
+        <strong>Tips:</strong> Check for overflow *before* multiplying by 10.<br>
+        <strong>Variant:</strong> String to Integer (atoi).
+    </div>
+</div>
+
+</body>
+</html>

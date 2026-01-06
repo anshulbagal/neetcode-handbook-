@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeetCode 150 Compact</title>
+<style>
+    body{font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:0 auto;padding:20px;background:#f4f4f4;color:#333}
+    h1{text-align:center;color:#2c3e50;border-bottom:3px solid #27ae60;padding-bottom:10px}
+    input{width:100%;padding:10px;margin-bottom:20px;border:1px solid #ddd;border-radius:4px;box-sizing:border-box}
+    .chapter{background:#2c3e50;color:#fff;padding:10px;margin:30px 0 10px;border-radius:4px}
+    .card{background:#fff;padding:15px;margin-bottom:15px;border-left:5px solid #27ae60;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+    .header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap}
+    .title{font-size:1.2em;font-weight:bold;color:#2980b9}
+    .tags{font-size:0.8em;color:#7f8c8d;font-style:italic}
+    .meta{background:#e8f8f5;color:#16a085;padding:8px;margin:10px 0;border-radius:4px;font-size:0.9em}
+    .code{background:#2d3436;color:#dfe6e9;padding:12px;border-radius:4px;font-family:monospace;white-space:pre-wrap;font-size:0.85em;overflow-x:auto}
+    .tips{background:#fef9e7;color:#d35400;padding:8px;margin-top:10px;font-size:0.9em;border-left:3px solid #f1c40f}
+</style>
+</head>
+<body>
+<h1>NeetCode 150 Handbook</h1>
+<input type="text" id="search" placeholder="Search problems, companies, or patterns..." onkeyup="render()">
+<div id="app"></div>
+
+<script>
+// FORMAT: [Title, Companies, Pattern, Code (use \n for newlines), Tips]
+const data = [
+  // --- 1. ARRAYS & HASHING ---
+  ["1. Arrays & Hashing", "HEADER"],
+  ["Contains Duplicate", "Amazon, MS", "Hash Set", "unordered_set<int> s;\nfor(int x:n) if(s.count(x)) return 1; s.insert(x);\nreturn 0;", "Use sort for O(1) space"],
+  ["Valid Anagram", "Uber, Google", "Freq Array", "int c[26]={0};\nfor(char x:s) c[x-'a']++;\nfor(char x:t) c[x-'a']--;\nfor(int i:c) if(i) return 0;\nreturn 1;", "Check length first"],
+  ["Two Sum", "Amazon, Apple", "Hash Map", "unordered_map<int,int> m;\nfor(int i=0;i<n.size();i++){\n if(m.count(t-n[i])) return {m[t-n[i]],i};\n m[n[i]]=i;\n}", "One pass O(N)"],
+  ["Group Anagrams", "Amazon, MS", "Sort Key", "unordered_map<string,vector<string>> m;\nfor(string s:strs){\n string k=s; sort(k.begin(),k.end());\n m[k].push_back(s);\n}", "Key can be freq string"],
+  ["Top K Frequent", "Facebook", "Bucket Sort", "map<int,int> c; for(int x:n) c[x]++;\nvector<vector<int>> b(n.size()+1);\nfor(auto p:c) b[p.second].push_back(p.first);\n// Iterate back to find k", "Bucket sort O(N)"],
+  ["Encode/Decode", "Google", "Length Prefix", "enc: s+=to_string(str.size())+'#'+str;\ndec: find('#'), parse len, substr", "Handle delimiters"],
+  ["Product Except Self", "Amazon", "Pre/Suffix", "vector<int> r(n,1);\nfor(int i=0,p=1;i<n;i++) {r[i]=p; p*=n[i];}\nfor(int i=n-1,s=1;i>=0;i--) {r[i]*=s; s*=n[i];}", "No division allowed"],
+  ["Valid Sudoku", "Uber, Apple", "Hash Sets", "Use strings 'val(r)row', 'val(c)col', 'val(r/3)(c/3)box'\nCheck duplicates in set", "Or bitmasking"],
+  ["Longest Consecutive", "Google", "Set Start", "set<int> s(n.begin(),n.end());\nfor(int x:s) if(!s.count(x-1)) {\n int len=0; while(s.count(x+len)) len++;\n}", "Only check starts O(N)"],
+
+  // --- 2. TWO POINTERS ---
+  ["2. Two Pointers", "HEADER"],
+  ["Valid Palindrome", "FB, MS", "Converge", "int l=0,r=s.size()-1;\nwhile(l<r){\n if(!alnum(s[l])) l++;\n else if(!alnum(s[r])) r--;\n else if(lower(s[l++])!=lower(s[r--])) return 0;\n}", "isalnum check"],
+  ["Two Sum II", "Amazon", "Sorted Pointers", "int l=0,r=n.size()-1;\nwhile(l<r){\n int sum=n[l]+n[r];\n if(sum==t) return {l+1,r+1};\n sum<t?l++:r--;\n}", "1-based index"],
+  ["3Sum", "FB, Amazon", "Sort + 2Ptr", "sort(n.begin(),n.end());\nfor(int i=0;i<sz;i++){\n if(i>0&&n[i]==n[i-1]) continue;\n // 2Sum II logic on rest\n}", "Skip duplicates!"],
+  ["Container Most Water", "Google", "Greedy Shrink", "int l=0,r=sz-1,res=0;\nwhile(l<r){\n res=max(res,min(h[l],h[r])*(r-l));\n h[l]<h[r]?l++:r--;\n}", "Move shorter line"],
+  ["Trapping Rain Water", "Amazon", "Max Bounds", "int l=0,r=sz-1,mL=0,mR=0,res=0;\nwhile(l<r){\n if(h[l]<h[r]){ mL=max(mL,h[l]); res+=mL-h[l++]; }\n else { mR=max(mR,h[r]); res+=mR-h[r--]; }\n}", "O(1) space"],
+
+  // --- 3. SLIDING WINDOW ---
+  ["3. Sliding Window", "HEADER"],
+  ["Best Time Stock", "MS, Amazon", "MinSoFar", "int minP=INT_MAX,res=0;\nfor(int p:prices){ minP=min(minP,p); res=max(res,p-minP); }", "Like Kadane's"],
+  ["Longest Substr No Rep", "MS, FB", "Window Set", "int m[128],l=0,res=0;\nfill(m,m+128,-1);\nfor(int r=0;r<sz;r++){\n l=max(l,m[s[r]]+1); m[s[r]]=r;\n res=max(res,r-l+1);\n}", "Jump l index"],
+  ["Char Replacement", "Google", "MaxFreq", "int c[26]={0},mx=0,l=0;\nfor(int r=0;r<sz;r++){\n mx=max(mx,++c[s[r]-'A']);\n while(r-l+1-mx>k) c[s[l++]-'A']--;\n}", "Valid if len-maxF<=k"],
+  ["Permutation String", "MS", "Fixed Window", "Count freq of s1. Slide window on s2.\nIf win_counts == s1_counts return true", "O(26*N) -> O(N)"],
+  ["Min Window Substr", "FB, Google", "Need/Have", "Count t. Expand r. When have==need,\nshrink l and update minLen.\nIf char at l needed, have--.", "Check duplicates"],
+  ["Sliding Window Max", "Google", "Deque", "deque<int> q; // indices\nfor(int i=0;i<sz;i++){\n if(q.front()==i-k) q.pop_front();\n while(q.size()&&n[back]<n[i]) q.pop_back();\n q.push(i);\n}", "Monotonic Decr"],
+
+  // --- 4. STACK ---
+  ["4. Stack", "HEADER"],
+  ["Valid Parentheses", "Amazon", "Stack", "stack<char> st;\nfor(char c:s) {\n if(open) st.push(c);\n else if(st.empty()||map[c]!=st.top()) return 0;\n else st.pop();\n}", "Check empty at end"],
+  ["Min Stack", "Lyft", "2 Stacks", "st.push(x);\nif(minSt.empty()||x<=minSt.top()) minSt.push(x);\nPop: if(top==minTop) minSt.pop()", "O(1) getMin"],
+  ["Eval RPN", "Amazon", "Stack", "if(token==op) { b=pop, a=pop; push(a op b); }\nelse push(stoi(token))", "Order: a - b"],
+  ["Daily Temperatures", "Google", "Mono Stack", "stack<int> s;\nfor(int i=0;i<n;i++){\n while(s.size() && t[i]>t[s.top()])\n  { res[s.top()]=i-s.top(); s.pop(); }\n s.push(i);\n}", "Decreasing stack"],
+  ["Car Fleet", "Google", "Sort+Stack", "Sort(pos desc). Time=(target-p)/s.\nIf time > stack.top, push.\nElse it joins fleet (ignore).", "Use doubles"],
+  ["Largest Rect Hist", "Amazon", "Mono Stack", "Stack incr height indices.\nIf h[i]<h[top], pop & calc area:\n h[top] * (i - st.top - 1)", "Push 0 at end"],
+
+  // --- 5. BINARY SEARCH ---
+  ["5. Binary Search", "HEADER"],
+  ["Binary Search", "MS", "D&C", "l=0,r=n-1; m=l+(r-l)/2;\nif(n[m]==t) return m;\nn[m]<t ? l=m+1 : r=m-1;", "Prevent overflow"],
+  ["Search 2D Matrix", "Amazon", "Virtual Array", "r=row*col-1; mid mapping:\nval = mat[mid/col][mid%col]", "Sorted property"],
+  ["Koko Bananas", "Google", "BS Answer", "Range [1, maxPile].\nIf canEat(mid) r=mid; else l=mid+1.\nHours = ceil(p/k)", "Ceil div: (p+k-1)/k"],
+  ["Find Min Rotated", "FB", "Compare Right", "if(n[m] > n[r]) l=m+1;\nelse r=m;", "Converge l<r"],
+  ["Search Rotated", "FB, Google", "Sorted Half", "if(n[l]<=n[m]) // left sorted\n check if t in [l,m]\nelse // right sorted\n check if t in [m,r]", "Dupes -> O(N)"],
+  ["Time Key-Value", "Google", "Map+BS", "map<key, vector<{t,val}>>\nupper_bound(t). prev(it)", "Timestamp sorted"],
+  ["Median 2 Arrays", "Google", "Partition", "BS shorter array. Partition X, Y.\nmaxLX <= minRY && maxLY <= minRX", "Hard edge cases"],
+
+  // --- 6. LINKED LIST ---
+  ["6. Linked List", "HEADER"],
+  ["Reverse List", "Amazon", "Iterative", "cur=head, prev=null\nwhile(cur){ nx=cur->next; cur->next=prev; prev=cur; cur=nx; }", "O(1) space"],
+  ["Merge Sorted Lists", "MS", "Dummy", "dummy, tail=&dummy\nwhile(l1&&l2) append smaller\ntail->next = l1?l1:l2", "Pointer manip"],
+  ["Reorder List", "Amazon", "Mid+Rev+Merge", "1. Find mid (slow/fast)\n2. Reverse 2nd half\n3. Merge lists alt", "Break links"],
+  ["Remove Nth End", "FB", "Gap Ptrs", "fast moves n+1 steps.\nMove slow/fast until fast null.\nslow->next = slow->next->next", "Use dummy"],
+  ["Copy Random List", "MS", "Map", "map[old] = new Node(old->val)\nmap[old]->next = map[old->next]\nmap[old]->rand = map[old->rand]", "Or interleave"],
+  ["Add Two Numbers", "Amazon", "Math", "sum = v1+v2+carry; carry=sum/10;\nnode->val = sum%10", "Final carry"],
+  ["LL Cycle", "Amazon", "Floyd", "slow=head, fast=head\nwhile(fast&&fast->nx) slow=nx, fast=nx->nx\nif(slow==fast) found", "Tortoise Hare"],
+  ["Find Duplicate", "Amazon", "Cycle Array", "Treat vals as ptrs. Find cycle.\nReset slow, move both 1 step.", "No mod array"],
+  ["LRU Cache", "Amazon", "Map+DLL", "Map<key, list_iterator>\nget: splice node to front\nput: remove back if full", "O(1) ops"],
+  ["Merge K Lists", "FB", "Min-Heap", "pq.push(heads)\npop min, add to res, push min->next", "O(N log K)"],
+  ["Reverse K-Group", "MS", "Hard", "Check k exists. Reverse. Link prev->newHead.\nRecurse/Iterate.", "Dummy node"],
+
+  // --- 7. TREES ---
+  ["7. Trees", "HEADER"],
+  ["Invert Tree", "Google", "Swap", "swap(l,r); invert(l); invert(r)", "Recursive"],
+  ["Max Depth", "LinkedIn", "DFS", "1 + max(depth(l), depth(r))", "Or BFS"],
+  ["Diameter", "FB", "DFS", "mx = max(mx, l+r)\nreturn 1 + max(l,r)", "Pass global max"],
+  ["Balanced Tree", "Amazon", "DFS Height", "if(abs(l-r)>1) return -1;\nreturn 1 + max(l,r)", "Error code -1"],
+  ["Same Tree", "Google", "DFS", "if(!p||!q) return p==q;\ncheck val && same(l) && same(r)", "Base cases"],
+  ["Subtree", "FB", "DFS+Same", "if(same(s,t)) return 1;\nreturn sub(s->l)||sub(s->r)", "Merkle hash opt"],
+  ["LCA BST", "MS", "BST Prop", "if(val > p && val > q) go left\nif(val < p && val < q) go right\nreturn root", "O(H)"],
+  ["Level Order", "Amazon", "BFS", "queue q; push root\nloop q.size; pop, add children", "Level separation"],
+  ["Right Side", "FB", "BFS", "BFS. Add last element of level", "Or DFS R->L"],
+  ["Count Good Nodes", "MS", "DFS", "count += (val >= maxSoFar)\ndfs(child, max(val, max))", "Pass max"],
+  ["Validate BST", "Amazon", "Range", "valid(node, min, max)\nval > min && val < max", "Long long"],
+  ["Kth Smallest", "Uber", "Inorder", "Stack. Go left. Pop (k--). If k==0 ret.\nGo right.", "Sorted access"],
+  ["Build Tree", "Amazon", "Pre/In Map", "Root=pre[0]. Find in inorder.\nSplit ranges. Recurse.", "Hash map"],
+  ["Max Path Sum", "FB", "DFS Max", "gain = max(0, dfs)\nglobal = max(g, val+l+r)\nreturn val+max(l,r)", "Negative ignore"],
+  ["Serialize Tree", "Google", "Preorder", "Use 'N' for null. Comma delim.\nQueue to deserialize.", "Structure"],
+
+  // --- 8. HEAPS ---
+  ["8. Heaps", "HEADER"],
+  ["Kth Largest Stream", "Amazon", "MinHeap", "Keep size K. Top is Kth largest.", "Pop small"],
+  ["Last Stone", "Amazon", "MaxHeap", "Pop x, y. Push y-x.", "Simulation"],
+  ["K Closest Points", "FB", "MaxHeap", "Keep size K. Pop largest dist.", "Dist sq"],
+  ["Kth Largest Array", "FB", "MinHeap", "Keep size K or QuickSelect", "Avg O(N)"],
+  ["Task Scheduler", "Google", "Math", "(maxF-1)*(n+1) + countMax", "Idle slots"],
+  ["Design Twitter", "Twitter", "Merge K", "Pull 10 from followees. Merge.", "System Des"],
+  ["Median Stream", "Google", "2 Heaps", "MaxHeap(small), MinHeap(large)\nBalance sizes.", "O(1) find"],
+
+  // --- 9. BACKTRACKING ---
+  ["9. Backtracking", "HEADER"],
+  ["Subsets", "FB", "Pick/Skip", "dfs(i+1, cur); cur.push(n[i]); dfs...", "2^N"],
+  ["Comb Sum", "Airbnb", "Reuse", "dfs(i, sum-n[i]) to reuse.\ndfs(i+1) to skip.", "Sort first"],
+  ["Permutations", "Google", "Swap", "Swap(start, i). Recurse. Swap back.", "N!"],
+  ["Subsets II", "Amazon", "Skip Dups", "Sort. if(i>s && n[i]==n[i-1]) skip", "Duplicates"],
+  ["Comb Sum II", "Amazon", "No Reuse", "Sort. dfs(i+1). Skip dups loop.", "Unique"],
+  ["Word Search", "Amazon", "Grid DFS", "Mark '#'. Recurse neighbors. Unmark.", "Backtrack"],
+  ["Palindrome Part", "Google", "DFS", "if(isPal(s,i,j)) recurse(j+1)", "Partition"],
+  ["Letter Combo", "Amazon", "DFS", "Map digits. Loop chars. Recurse.", "Phone pad"],
+  ["N-Queens", "Amazon", "Sets", "Cols, Diag1, Diag2 sets.", "Constraints"],
+
+  // --- 10. GRAPHS ---
+  ["10. Graphs", "HEADER"],
+  ["Num Islands", "Amazon", "DFS", "Grid loop. If '1', dfs count++, mark '0'.", "Flood fill"],
+  ["Clone Graph", "FB", "Map", "Map<Old,New>. If seen, return. Else new.", "Deep copy"],
+  ["Max Area Island", "Amazon", "DFS Sum", "1 + dfs(u) + dfs(d) ...", "Return 0 if water"],
+  ["Pacific Atlantic", "Google", "DFS Border", "DFS from Pac, Atl. Intersect sets.", "Flow up"],
+  ["Surrounded Reg", "Google", "Border DFS", "DFS border 'O' -> safe.\nFlip rest 'O'->'X'.", "Inverse"],
+  ["Rotting Oranges", "Amazon", "BFS", "Q all rotten. BFS levels. Check fresh.", "Min time"],
+  ["Walls and Gates", "FB", "BFS", "Q all gates. BFS dist update.", "Multi-source"],
+  ["Course Sched", "Amazon", "Topo", "State: 0,1(visiting),2. Cycle if 1.", "DAG check"],
+  ["Course Sched II", "Amazon", "Kahn", "Indegrees. Q zeros. Order list.", "Order"],
+  ["Redundant Conn", "Google", "UnionFind", "If union(u,v) false, ret edge.", "Cycle"],
+  ["Num Components", "Google", "UnionFind", "Start n. Decr on union.", "Disjoint Set"],
+  ["Graph Valid Tree", "Google", "UnionFind", "No cycles && components==1", "Edges=n-1"],
+  ["Word Ladder", "Amazon", "BFS", "Change char a-z. Check dict.", "Shortest path"],
+
+  // --- 11-18. ADVANCED & DP (Compressed) ---
+  ["11-18. Adv & DP", "HEADER"],
+  ["Climbing Stairs", "Amazon", "Fib", "a=1, b=1, c=a+b", "DP"],
+  ["Min Cost Stairs", "Amazon", "DP", "c[i]+=min(c[i-1],c[i-2])", "In-place"],
+  ["House Robber", "Google", "DP", "max(n+rob[i-2], rob[i-1])", "Skip/Take"],
+  ["Robber II", "MS", "Circ DP", "Max of rob(0,n-2) and rob(1,n-1)", "Circle"],
+  ["Longest Pali Sub", "Amazon", "Center", "Expand (i,i) and (i,i+1)", "N^2"],
+  ["Palindromic Sub", "FB", "Count", "Count during expansion", "Total"],
+  ["Decode Ways", "FB", "DP", "if(s[i]!='0') dp[i]+=dp[i-1]...", "Fib-like"],
+  ["Coin Change", "Amazon", "Knapsack", "dp[a]=min(dp[a], 1+dp[a-c])", "Unbounded"],
+  ["Max Prod Sub", "Amazon", "Min/Max", "Track curMin, curMax (neg flips)", "Kadane"],
+  ["Word Break", "Amazon", "DP", "if(dp[j] && s[j..i] in dict)", "N^2"],
+  ["LIS", "Google", "Patience", "lower_bound replace", "N log N"],
+  ["Unique Paths", "Amazon", "Grid DP", "dp[r][c] = dp[r+1][c] + dp[r][c+1]", "Math nCr"],
+  ["LCS", "Amazon", "Grid DP", "match? 1+diag : max(up, left)", "Diff"],
+  ["Buy/Sell Cool", "Google", "State", "Sold, Hold, Reset states", "State machine"],
+  ["Target Sum", "Amazon", "Subset", "Subset sum P = (S+total)/2", "Knapsack"],
+  ["Interleaving", "Amazon", "2D DP", "Reachability from s1, s2", "String"],
+  ["Edit Distance", "Google", "Levenshtein", "min(ins, del, rep)", "DP"],
+  ["Max Subarray", "MS", "Kadane", "sum=max(n, sum+n)", "Greedy"],
+  ["Jump Game", "Amazon", "Greedy", "Shift goal post left", "Reverse"],
+  ["Gas Station", "Google", "Greedy", "if sum<0 reset start", "Prefix sum"],
+  ["Merge Intervals", "FB", "Sort", "if start<=lastEnd merge", "Sort first"],
+  ["Non-overlap", "FB", "Greedy", "Sort end. If overlap count++", "Remove max end"],
+  ["Meeting Rooms", "FB", "Sort", "Check overlaps", "Sort"],
+  ["Meeting Rooms II", "Google", "Chronological", "Sort starts, ends. Scan.", "Heap"],
+  ["Rotate Image", "Amazon", "Math", "Transpose + Reflect", "Matrix"],
+  ["Spiral Matrix", "MS", "Sim", "Bounds L,R,T,B", "Loop"],
+  ["Set Zeroes", "FB", "Flags", "Use row 0, col 0", "O(1) space"],
+  ["Single Number", "Amazon", "Bit", "XOR all", "a^a=0"],
+  ["Number 1 Bits", "MS", "Bit", "n &= (n-1)", "Hamming"],
+  ["Counting Bits", "Amazon", "DP", "dp[i] = dp[i>>1] + (i&1)", "Offset"],
+  ["Reverse Bits", "Apple", "Shift", "res = (res<<1)|(n&1)", "32 times"],
+  ["Missing Number", "Amazon", "Math/XOR", "Sum(n) - Sum(nums)", "Gauss"],
+  ["Sum Two Int", "FB", "Adder", "XOR sum, AND carry", "Logic"]
+];
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const app = document.getElementById('app');
+  app.innerHTML = data.map(item => {
+    if(item[1] === "HEADER") return `<div class="chapter">${item[0]}</div>`;
+    if(q && !item.join(' ').toLowerCase().includes(q)) return '';
+    return `
+      <div class="card">
+        <div class="header">
+          <span class="title">${item[0]}</span>
+          <span class="tags">${item[1]}</span>
+        </div>
+        <div class="meta"><strong>Pattern:</strong> ${item[2]}</div>
+        <div class="code">${item[3].replace(/</g,'&lt;')}</div>
+        <div class="tips">💡 ${item[4]}</div>
+      </div>`;
+  }).join('');
+}
+render();
+</script>
+</body>
+</html>
